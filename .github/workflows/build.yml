@@ -1,0 +1,35 @@
+name: build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+env:
+  CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_API_KEY }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Cachix
+        if: ${{ vars.CACHIX_CACHE != '' && env.CACHIX_AUTH_TOKEN != '' }}
+        uses: cachix/cachix-action@v17
+        with:
+          name: ${{ vars.CACHIX_CACHE }}
+          authToken: ${{ env.CACHIX_AUTH_TOKEN }}
+
+      - name: Build flake package
+        run: nix build .#zo --print-build-logs
