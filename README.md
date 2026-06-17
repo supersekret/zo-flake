@@ -7,7 +7,7 @@ This flake packages the upstream Linux Debian release of Zo `1.5.6` as a Nix app
 - Downloads the official `Zo-1.5.6-amd64.deb`
 - Extracts the Electron app bundle from `/opt/Zo`
 - Auto-patches the bundled ELF binaries for Nix
-- Installs a `zo` launcher plus desktop entry and icon
+- Installs a `zo` launcher plus desktop entry, icon, and `zo://` protocol handler metadata
 
 ## Usage
 
@@ -26,14 +26,39 @@ nix run
 ## Install directly from GitHub
 
 ```bash
-nix run github:codegod100/zo-flake
+nix run github:supersekret/zo-flake
 ```
 
 Or install it into your profile:
 
 ```bash
-nix profile install github:codegod100/zo-flake
+nix profile install github:supersekret/zo-flake
 ```
+
+## Register the `zo://` handler locally
+
+The package now ships a desktop entry with `MimeType=x-scheme-handler/zo;`, but your local desktop still has to install and register that entry.
+
+Typical non-NixOS setup:
+
+```bash
+nix profile install github:supersekret/zo-flake
+xdg-mime default zo.desktop x-scheme-handler/zo
+```
+
+Home Manager example:
+
+```nix
+home.packages = [
+  inputs.zo-flake.packages.${pkgs.system}.zo
+];
+
+xdg.mimeApps.defaultApplications = {
+  "x-scheme-handler/zo" = "zo.desktop";
+};
+```
+
+After that, restart the browser if it was already open.
 
 ## CI and Cachix
 

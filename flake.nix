@@ -98,6 +98,7 @@
               sed \
                 -e "s#^Exec=/opt/Zo/zo %U#Exec=$out/bin/zo %U#" \
                 -e "s#^Icon=zo#Icon=$out/share/icons/hicolor/512x512/apps/zo.png#" \
+                -e "s#^MimeType=.*#MimeType=x-scheme-handler/zo;#" \
                 usr/share/applications/zo.desktop > zo.desktop
 
               install -Dm644 zo.desktop "$out/share/applications/zo.desktop"
